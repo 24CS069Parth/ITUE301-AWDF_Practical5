@@ -19,58 +19,56 @@ mongoose
     console.log(`Database: ${mongoose.connection.name}`);
     console.log(`Host: ${mongoose.connection.host}`);
     console.log(`=========================================`);
-    // Seed initial connected coursework tasks if empty
-    await seedInitialTasks();
+    await resetAndSeedTasks();
   })
   .catch((err) => {
     console.error('MongoDB connection error:', err.message);
   });
 
-// Seed helper ensuring initial coursework data is present
-async function seedInitialTasks() {
+// Seed helper with distinct Practical 5 Mongoose tasks
+async function resetAndSeedTasks() {
   try {
-    const count = await Task.countDocuments();
-    if (count === 0) {
-      console.log('Seeding initial coursework tasks into MongoDB...');
-      await Task.insertMany([
-        {
-          title: 'Set up Vite React Portfolio & Reusable Components',
-          description: 'Construct modular Header, About, Skills, and Footer architecture with prop validation.',
-          completed: true,
-          priority: 'high',
-          category: 'Practical 1',
-        },
-        {
-          title: 'Implement React Router v6 & Reactive State',
-          description: 'Client-side SPA navigation without full page reload, controlled forms, and dark mode.',
-          completed: true,
-          priority: 'high',
-          category: 'Practical 2',
-        },
-        {
-          title: 'Integrate GitHub REST API with Async States',
-          description: 'Consume live GitHub public endpoints on mount using useEffect with spinner and error boundaries.',
-          completed: true,
-          priority: 'high',
-          category: 'Practical 3',
-        },
-        {
-          title: 'Design RESTful Express Backend & Middleware',
-          description: 'Build complete CRUD endpoints with custom request logging, ID validator, and centralized error handler.',
-          completed: true,
-          priority: 'high',
-          category: 'Practical 4',
-        },
-        {
-          title: 'Integrate MongoDB with Mongoose Schema & Validation',
-          description: 'Connect persistent NoSQL database, enforce schema constraints, enum restrictions, and pre-save hooks.',
-          completed: false,
-          priority: 'high',
-          category: 'Practical 5',
-        },
-      ]);
-      console.log('Seeding completed successfully!');
-    }
+    // Refresh collection so distinct Practical 5 tasks with Mongoose ObjectIds are loaded
+    await Task.deleteMany({});
+    console.log('Seeding fresh Practical 5 MongoDB tasks...');
+    await Task.insertMany([
+      {
+        title: 'Design Task Schema with Mongoose Constraints',
+        description: 'Define field types, required constraints, and default values in models/Task.js',
+        completed: true,
+        priority: 'high',
+        category: 'Schema Design',
+      },
+      {
+        title: 'Implement Pre-Save Whitespace Trimming Hook',
+        description: 'Mongoose middleware automatically sanitizes and trims title strings before saving.',
+        completed: true,
+        priority: 'high',
+        category: 'Mongoose Hooks',
+      },
+      {
+        title: 'Enforce Priority Enum Constraint [low, medium, high]',
+        description: 'Schema-level validation restricting priority values and returning structured JSON on failure.',
+        completed: false,
+        priority: 'medium',
+        category: 'Validation',
+      },
+      {
+        title: 'Test MongoDB CRUD Endpoints in Postman / Browser',
+        description: 'Verify persistence of Task.find, create, findById, update, and delete in MongoDB database.',
+        completed: false,
+        priority: 'medium',
+        category: 'Testing',
+      },
+      {
+        title: 'Capture Output Screenshots for Practical 5 Report',
+        description: 'Document schema validation errors, 404 responses, and live MongoDB documents.',
+        completed: false,
+        priority: 'low',
+        category: 'Submission',
+      },
+    ]);
+    console.log('Practical 5 MongoDB tasks seeded successfully!');
   } catch (err) {
     console.error('Error seeding tasks:', err.message);
   }
@@ -102,11 +100,152 @@ const validateObjectId = (req, res, next) => {
 };
 
 // ==========================================
-// 3. RESTful CRUD Endpoints with Mongoose
+// 3. Interactive Web Test Console (Browser Friendly)
 // ==========================================
-
-// GET / - API Info & Documentation
 app.get('/', (req, res) => {
+  // If request specifically accepts HTML (browser), render the interactive test console
+  if (req.headers.accept && req.headers.accept.includes('text/html')) {
+    return res.send(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Practical 5 - MongoDB & Mongoose API Test Console</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #0f172a; color: #f8fafc; padding: 2rem; max-width: 1000px; margin: 0 auto; }
+    header { border-bottom: 2px solid #334155; padding-bottom: 1.5rem; margin-bottom: 2rem; }
+    h1 { color: #60a5fa; font-size: 1.75rem; margin-bottom: 0.5rem; }
+    .badge { display: inline-block; background-color: #065f46; color: #34d399; padding: 0.25rem 0.65rem; border-radius: 4px; font-size: 0.85rem; font-weight: 600; }
+    .actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    button { background-color: #1e293b; color: #f8fafc; border: 1px solid #475569; padding: 0.85rem 1rem; border-radius: 6px; font-weight: 600; cursor: pointer; text-align: left; transition: all 0.2s; }
+    button:hover { background-color: #2563eb; border-color: #3b82f6; transform: translateY(-2px); }
+    button small { display: block; font-weight: 400; font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem; }
+    button:hover small { color: #dbeafe; }
+    .btn-danger { border-color: #ef4444; }
+    .btn-danger:hover { background-color: #dc2626; border-color: #ef4444; }
+    .console-box { background-color: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 1.25rem; }
+    .console-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 0.75rem; margin-bottom: 0.75rem; font-size: 0.9rem; color: #94a3b8; }
+    .status-pill { font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem; }
+    .status-200, .status-201 { background-color: #064e3b; color: #34d399; }
+    .status-400, .status-404 { background-color: #7f1d1d; color: #f87171; }
+    pre { background-color: #090d16; padding: 1rem; border-radius: 6px; overflow-x: auto; color: #38bdf8; font-size: 0.88rem; line-height: 1.5; font-family: ui-monospace, Consolas, monospace; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Practical 5: MongoDB Integration & Mongoose Schema Test Console</h1>
+    <p>Student: <strong>Aayush Malhotra (24CS051)</strong> &bull; Database: <span class="badge">Connected to MongoDB</span></p>
+  </header>
+
+  <section class="actions-grid">
+    <button onclick="fetchAllTasks()">
+      📄 1. GET /tasks
+      <small>Fetch all tasks from MongoDB collection</small>
+    </button>
+    <button onclick="fetchTaskById()">
+      🔍 2. GET /tasks/:id
+      <small>Fetch single task by MongoDB ObjectId</small>
+    </button>
+    <button onclick="createTask()">
+      ➕ 3. POST /tasks (Valid)
+      <small>Create task & test pre-save trimming hook</small>
+    </button>
+    <button class="btn-danger" onclick="triggerValidationError()">
+      ⚠️ 4. Test Validation Error
+      <small>Missing title & invalid priority enum (400)</small>
+    </button>
+    <button class="btn-danger" onclick="test404NotFound()">
+      ❌ 5. Test 404 Not Found
+      <small>Request non-existent MongoDB ObjectId (404)</small>
+    </button>
+    <button onclick="updateTask()">
+      ✏️ 6. PUT /tasks/:id
+      <small>Update task completed status in MongoDB</small>
+    </button>
+  </section>
+
+  <div class="console-box">
+    <div class="console-header">
+      <span id="req-info">Active Request: Ready</span>
+      <span id="res-status" class="status-pill status-200">HTTP 200 Ready</span>
+    </div>
+    <pre id="output-display">// Click any button above to execute a real Mongoose operation against MongoDB and inspect the response!</pre>
+  </div>
+
+  <script>
+    let sampleId = '';
+
+    async function executeApi(method, url, body = null, desc = '') {
+      document.getElementById('req-info').innerText = method + ' ' + url + ' (' + desc + ')';
+      const options = { method, headers: { 'Accept': 'application/json' } };
+      if (body) {
+        options.headers['Content-Type'] = 'application/json';
+        options.body = JSON.stringify(body);
+      }
+      try {
+        const res = await fetch(url, options);
+        const data = await res.json();
+        const statusEl = document.getElementById('res-status');
+        statusEl.innerText = 'HTTP ' + res.status + ' ' + res.statusText;
+        statusEl.className = 'status-pill status-' + (res.status < 300 ? '200' : res.status);
+        document.getElementById('output-display').innerText = JSON.stringify(data, null, 2);
+        if (data.data && Array.isArray(data.data) && data.data.length > 0) {
+          sampleId = data.data[0]._id;
+        } else if (data.data && data.data._id) {
+          sampleId = data.data._id;
+        }
+      } catch (err) {
+        document.getElementById('output-display').innerText = 'Fetch error: ' + err.message;
+      }
+    }
+
+    function fetchAllTasks() {
+      executeApi('GET', '/tasks', null, 'Read All Tasks');
+    }
+
+    function fetchTaskById() {
+      const idToFetch = sampleId || '6ad30676f1fa482c4d060d5e';
+      executeApi('GET', '/tasks/' + idToFetch, null, 'Read Single Task by ObjectId');
+    }
+
+    function createTask() {
+      executeApi('POST', '/tasks', {
+        title: '   Build Full-Stack MERN Integration (Prac 6)   ',
+        description: 'Demonstrating pre-save hook trimming whitespace and saving to MongoDB',
+        priority: 'high',
+        completed: false
+      }, 'Create Document with Pre-Save Hook');
+    }
+
+    function triggerValidationError() {
+      executeApi('POST', '/tasks', {
+        description: 'Invalid document missing title with illegal priority',
+        priority: 'ultra-critical'
+      }, 'Schema Validation Failure');
+    }
+
+    function test404NotFound() {
+      executeApi('GET', '/tasks/6ad3070db7a59c63bd4964ff', null, 'Non-Existent ObjectId');
+    }
+
+    function updateTask() {
+      const idToUpdate = sampleId || '6ad30676f1fa482c4d060d5e';
+      executeApi('PUT', '/tasks/' + idToUpdate, {
+        completed: true,
+        priority: 'low'
+      }, 'Update Task in MongoDB');
+    }
+
+    // Auto load on start
+    fetchAllTasks();
+  </script>
+</body>
+</html>
+    `);
+  }
+
+  // Fallback for API clients requesting JSON
   res.status(200).json({
     message: 'Task Management MongoDB API - ITUE301 Practical 5',
     student: 'Aayush Malhotra (24CS051)',
@@ -117,7 +256,6 @@ app.get('/', (req, res) => {
       createTask: 'POST /tasks',
       updateTask: 'PUT /tasks/:id',
       deleteTask: 'DELETE /tasks/:id',
-      validationTest: 'POST /tasks (with invalid data to test schema validation)',
     },
   });
 });
