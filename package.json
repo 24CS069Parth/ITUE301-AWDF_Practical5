@@ -1,0 +1,19 @@
+{
+  "name": "task-manager-mongodb-24cs051",
+  "version": "1.0.0",
+  "description": "MongoDB Integration and Schema Design with Mongoose - Practical 5",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["mongodb", "mongoose", "schema-validation", "express", "crud", "itue301"],
+  "author": "Aayush Malhotra (24CS051)",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.5"
+  }
+}
