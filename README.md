@@ -2,8 +2,8 @@
 ## Practical 5: MongoDB Integration and Schema Design with Mongoose
 
 ### Student Details
-- **Student ID:** 24CS051
-- **Student Name:** Aayush Malhotra
+- **Student ID:** 24CS050
+- **Student Name:** Vivek Maheshwari
 - **Subject Code & Name:** CSE304 / ITUE301: Advanced Web Development Frameworks
 - **Department:** Department of Computer Science and Engineering
 - **Institution:** Chandubhai S Patel Institute of Technology (CSPIT), CHARUSAT
@@ -70,7 +70,7 @@ cp .env.example .env
 Inside `.env`:
 ```env
 PORT=5000
-MONGO_URI=mongodb://127.0.0.1:27017/task_manager_24cs051
+MONGO_URI=mongodb://127.0.0.1:27017/task_manager_24cs050
 ```
 
 #### 2. Install Dependencies & Start
