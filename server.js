@@ -6,7 +6,7 @@ const Task = require('./models/Task');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/task_manager_24cs050';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/task_manager_24cs069';
 
 // ==========================================
 // 1. Connect to MongoDB using Mongoose
@@ -135,7 +135,7 @@ app.get('/', (req, res) => {
 <body>
   <header>
     <h1>Practical 5: MongoDB Integration & Mongoose Schema Test Console</h1>
-    <p>Student: <strong>Vivek Maheshwari (24CS050)</strong> &bull; Database: <span class="badge">Connected to MongoDB</span></p>
+    <p>Student: <strong>Parth Patel (24CS069)</strong> &bull; Database: <span class="badge">Connected to MongoDB</span></p>
   </header>
 
   <section class="actions-grid">
@@ -248,7 +248,7 @@ app.get('/', (req, res) => {
   // Fallback for API clients requesting JSON
   res.status(200).json({
     message: 'Task Management MongoDB API - ITUE301 Practical 5',
-    student: 'Vivek Maheshwari (24CS050)',
+    student: 'Parth Patel (24CS069)',
     database: mongoose.connection.readyState === 1 ? 'Connected to MongoDB' : 'Disconnected',
     endpoints: {
       getAllTasks: 'GET /tasks',
